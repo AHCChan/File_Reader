@@ -7,6 +7,12 @@ This module contains a Class designed to be the base class on which
 type-specific file readers are to be based.
 """
 
+# Lists ########################################################################
+
+LIST__newline = ["\n", "\r", "\n\r", "\r\n"]
+
+
+
 # Classes ######################################################################
 
 class File_Reader:
@@ -18,19 +24,23 @@ class File_Reader:
         
         f = File_Reader()
         f.Open("F:/Filepath.h")
-        while not f.EOF:
+        while not f.End():
             f.Read(
             # Your code
             current_element = f.Get()
+        f.Close()
     
     Methods and factors which require rewriting in all subclasses:
         
         self.empty_element
         
+        self._MSG__object_type
+        self._MSG__units_of_measure
+        
         self.Copy_Element(element)
         self._get_next_element()
         self.Is_Empty_Element(element)
-        self.Get_Size()
+        self.Get_Size() # If used
     """
     
     # Minor Configurations #####################################################
@@ -80,12 +90,13 @@ class File_Reader:
     `   Creates a File Reader object. The filepath will be tested if a
         filepath is supplied.
         """
-        self.Pprint(self._init_message)
+        self.printP(self._MSG__init_message)
         self.size = 0
+        self.current_index = -1
         self.file_path = ""
         self.file_opened = False
         self.file = False
-        self.element = self.current_element = self.next_element = ""
+        self.current_element = self.next_element = None
         self.EOF = True
         if file_path:
             self.Set_New_Path(file_path)
@@ -106,20 +117,21 @@ class File_Reader:
         """
         if self.file_path:
             return self.Get_Size()
-        self.printE(self._unspecified_file_path)
+        self.printE(self._MSG__unspecified_file_path)
         return 0
     
     def __str__(self):
         """
         Return a string representation of the currently selected file.
         """
-        sb = ("<File_Reader Object> - " + ["CLOSED", "OPENED"][self.file_opened]
-                + "\n\t")
+        sb = ("<{T} Object> - ".format(T = self._MSG__object_type) +
+                ["CLOSED", "OPENED"][self.file_opened] + "\n\t")
         if self.file_path: sb += "PATH:\t\"{P}\"".format(P = self.file_path)
         else: sb += "(No File Path specified.)"
-        sb += "\n\tSIZE: {S} rows".format(S = self.get_size())
+        sb += "\n\tSIZE:\t{S} {E}".format(S = self.Get_Size(),
+                E = self._MSG__units_of_measure)
         return sb
-    
+     
     def Get_Size(self):
         """
         Return the number of elements in the file. Exactly what constitutes an
@@ -141,6 +153,13 @@ class File_Reader:
         """
         print(self._MSG__method_not_implemented)
         return element
+
+    def End(self):
+        """
+        Return True if the end of file has been reached.
+        Return False otherwise.
+        """
+        return self.EOF
     
     # File I/O Methods #########################################################
     
@@ -197,6 +216,8 @@ class File_Reader:
         self.file_opened = True
         self.EOF = False
         self.next_element = self.empty_element
+        self.Reset_Index()
+        self.Read_Header()
         self.Read()
     
     def Close(self):
@@ -207,7 +228,7 @@ class File_Reader:
         if self.file_opened:
             self.printP(self._MSG__file_closed_message)
             self.size = 0
-            self.current_index = 0
+            self.current_index = -1
             self.file.close()
     
     def State(self):
@@ -244,6 +265,15 @@ class File_Reader:
         """
         self.Read()
     
+    def Read_Header(self):
+        """
+        A one-off file reading procedure for dealing with file headers and the
+        like.
+
+        May not be relevant to all files.
+        """
+        pass
+    
     def Read(self, number=1):
         """
         Set the stored element to the next element in the file, or to the
@@ -277,12 +307,13 @@ class File_Reader:
         element of the file since it will be the "current" element.
         """
         self.current_element = self.next_element
-        self.element = self.current_element
         self.next_element = self._get_next_element()
         if self.Is_Empty_Element(self.next_element):
             self.next_element = self.empty_element
             self.EOF = True
             self.printP(self._MSG__EOF_reached)
+        else:
+            self.current_index += 1
     
     def _get_next_element(self):
         """
@@ -299,6 +330,12 @@ class File_Reader:
         if element == self.empty_element:
             return True
         return False
+    
+    def Reset_Index(self):
+        """
+        STUB. Possibly modify code for your implementation.
+        """
+        self.current_index = -1
     
     # Controlled Print Methods #################################################
     
