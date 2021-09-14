@@ -215,7 +215,7 @@ class File_Reader:
         """
         self.file_opened = True
         self.EOF = False
-        self.next_element = self.empty_element
+        self.next_element = self.Copy_Element(self.empty_element)
         self.Reset_Index()
         self.Read_Header()
         self.Read()
@@ -258,6 +258,13 @@ class File_Reader:
         Return a copy of the current element.
         """
         return self.Copy_Element(self.current_element)
+    
+    def Get_Current_SOFT(self):
+        """
+        Return the current element directly. Allows the current element to be
+        modified by external code. Caution is advised.
+        """
+        return self.current_element
 
     def Next(self):
         """
