@@ -38,7 +38,7 @@ class File_Reader:
         self._MSG__units_of_measure
         
         self.Copy_Element(element)
-        self._get_next_element()
+        self._get_next_element() OR self._read()
         self.Is_Empty_Element(element)
         self.Get_Size() # If used
     """
@@ -96,7 +96,7 @@ class File_Reader:
         self.file_path = ""
         self.file_opened = False
         self.file = False
-        self.current_element = self.next_element = None
+        self.current_element = self.next_element = self.empty_element
         self.EOF = True
         if file_path:
             self.Set_New_Path(file_path)
@@ -160,6 +160,23 @@ class File_Reader:
         Return False otherwise.
         """
         return self.EOF
+    
+    def Get_Extension(self, file_path=""):
+        """
+        Return the file extension of the specified file. Use the stored file
+        name if no file path was specified.\
+        Return an empty string if no extension could be found.
+        """
+        if not file_path: file_path = self.file_path
+        rightmost_period = file_path.rfind(".")
+        if rightmost_period == -1: return ""
+        rightmost_fslash = file_path.rfind("/")
+        rightmost_bslash = file_path.rfind("\\")
+        rightmost_slash = max([rightmost_fslash, rightmost_bslash])
+        if rightmost_period < rightmost_slash: return ""
+        return file_path[rightmost_period+1:]
+    
+    
     
     # File I/O Methods #########################################################
     

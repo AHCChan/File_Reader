@@ -83,7 +83,7 @@ class Chr_FASTA_Reader(File_Reader):
         """
         Return the size of the chromosome in the FASTA file.
         
-        Return 0 if no filepath has been set.
+        Return -1 if no filepath has been set.
         """
         if self.file_path:
             count = 0
@@ -95,7 +95,7 @@ class Chr_FASTA_Reader(File_Reader):
                 char = f.read(1)
             f.close()
             return count
-        return 0
+        return -1
     
     
     

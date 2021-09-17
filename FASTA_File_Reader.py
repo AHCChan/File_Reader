@@ -92,7 +92,7 @@ class FASTA_Reader(File_Reader):
         """
         Return the number of sequences in the FASTA file.
         
-        Return 0 if no filepath has been set.
+        Return -1 if no filepath has been set.
         """
         if self.file_path:
             count = 0
@@ -103,7 +103,7 @@ class FASTA_Reader(File_Reader):
                 line = f.readline()
             f.close()
             return count
-        return 0
+        return -1
     
     
     
