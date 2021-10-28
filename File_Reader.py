@@ -260,7 +260,7 @@ class File_Reader:
         """
         temp = self.file_path
         self.file_path = False
-        self.open(temp)
+        self.Open(temp)
     
     # Content Reading Methods ##################################################
     
