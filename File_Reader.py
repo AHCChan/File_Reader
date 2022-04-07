@@ -262,6 +262,14 @@ class File_Reader:
         self.file_path = False
         self.Open(temp)
     
+    def IsClosed(self):
+        """
+        Return whether or not the file is closed. If there is no file, this will
+        also return True.
+        """
+        if type(self.file) == file: return self.file.closed
+        return True
+    
     # Content Reading Methods ##################################################
     
     def Get(self):
