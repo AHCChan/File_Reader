@@ -107,6 +107,20 @@ class Table_Reader(File_Reader):
     
     # Property Methods #########################################################
     
+    def __getitem__(self, arg):
+        """
+        Access items using square brackets, the same way one would access items
+        in a list.
+        """
+        try:
+            return self.current_element[arg]
+        except:
+            if type(arg) != int:
+                raise TypeError("list indices must be integers, not str")
+            if arg > len(self.current_element):
+                raise IndexError("list index out of range")
+            raise Exception("Unknown error in Table_File_Reader.__getitem__")          
+    
     def Autodetect_Delimiter(self):
         """
         Automatically select a delimiter to use, based on the currently set
