@@ -341,7 +341,50 @@ class Table_Reader(File_Reader):
         
 
 
+# Functions ####################################################################
 
+def Col_No_To_Set(files, file_format, col_no=0):
+    """
+    Return a set of all the values found in column number [col_no] of the files
+    in [files].
+    
+    @files
+            (list<str - dirpath>)
+            A list of the files to be scanned.
+    @file_format
+            (str)
+            The file format of the input file. Acceptable options are:
+                tsv - Tab-separated values
+                csv - Comma-separated values
+                ssv - Space-separated values
+    @col_no
+            (int)
+            The column number to be looked at.
+            This function uses a 0-indexing system. (i.e., the first column is
+            0)
+    
+    Col_No_To_Set(list<str>, str, int) -> set<str>
+    """
+    # Setup - Results
+    result = set([])
+    
+    # Setup - Readers
+    f = Table_Reader()
+    delim = DICT__delimiters[file_format]
+    f.Set_Delimiter(delim)
+    
+    # Read
+    for file_ in files:
+        f.Set_New_Path(file_)
+        f.Open()    
+        while not f.EOF:
+            f.Read()
+            item = f[col_no]
+            result.add(item)
+        f.Close()
+    
+    # Return
+    return result
 
 
 
