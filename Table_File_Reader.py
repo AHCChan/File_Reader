@@ -3,8 +3,8 @@ TABLE FILE READER
 (version 1.0)
 by Angelo Chan
 
-This module contains a Class capable of reading and interpretting FASTA file
-data and a Function that returns the number of genes in a FASTA file.
+This module contains a Class capable of reading and interpretting files which
+contain data tables and returning the values of each row, line by line.
 """
 
 # Imported Modules #############################################################
