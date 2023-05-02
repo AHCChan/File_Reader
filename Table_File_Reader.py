@@ -46,7 +46,7 @@ class Table_Reader(File_Reader):
 
     Designed for the following use:
     
-    f = File_Reader()
+    f = Table_File_Reader()
     f.Set_New_Path("F:/Filepath.csv")
     f.Autodetect_Delimiter() # OR f.Set_Delimiter(",")
     f.Set_Enclosers(["\"", "'"])  # Optional
