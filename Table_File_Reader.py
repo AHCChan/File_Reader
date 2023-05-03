@@ -246,7 +246,7 @@ class Table_Reader(File_Reader):
         
         [params] is expected to be a list of integers and/or strings. For
         integers, that many rows will be added directly to the "header_text"
-        varaible. For strings, rows will be added directly to the "header_text"
+        variable. For strings, rows will be added directly to the "header_text"
         variable as long as those rows begin with the string specified.
         """
         params = self.header_params
@@ -257,7 +257,7 @@ class Table_Reader(File_Reader):
                 while param > 0:
                     sb += line
                     line = self.file.readline()
-                    param -= 0
+                    param -= 1
             if type(param) == str:
                 while line.find(param) == 0:
                     sb += line
