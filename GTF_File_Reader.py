@@ -100,7 +100,7 @@ class GTF_Reader(Table_Reader):
     
     # Minor Configurations #####################################################
     
-    empty_element = [[""]]
+    empty_element = [[]]
     
     # Minor Configurations #####################################################
     
@@ -114,10 +114,10 @@ class GTF_Reader(Table_Reader):
     
     _MSG__object_type = "GTF File Reader"
     
-    _MSG__invalid_group_type = "Invalid grouping method. Please specify one "\
-            "of the following:\n\tTAG"
+    _MSG__invalid_group_type = "ERROR: Invalid grouping method. Please specify"\
+            " one of the following:\n\tTAG"
     
-    _MSG__no_tag = "No tag specified."
+    _MSG__no_tag = "ERROR: No tag specified."
     
     _MSG__abnormal = "Abnormal data detected:\n\t{s}"
     
@@ -137,7 +137,6 @@ class GTF_Reader(Table_Reader):
         self.tag = tag
         if grouping_method:
             self.Set_Grouping_Method(grouping_method)
-    
     
     
     
@@ -272,7 +271,7 @@ class GTF_Reader(Table_Reader):
         """
         # Next subgroup
         row = self.next_row
-        if row == [""]: return [[""]]
+        if row == [""]: return self.empty_element
         group_ID = self._get_group_ID(row)
         result = [list(row)]
         # Read on, loop
