@@ -224,6 +224,7 @@ class File_Reader:
                 self.__new()
                 self.printP(self._MSG__file_opened_message.format(
                         F=self.file_path))
+        elif not self.file_path: self.printE(self._MSG__unspecified_file_path)
         else: self.printP(self._MSG__same_file_path)
     
     def __new(self):
@@ -247,6 +248,7 @@ class File_Reader:
             self.size = 0
             self.current_index = -1
             self.file.close()
+            self.file_opened = False
     
     def State(self):
         """
