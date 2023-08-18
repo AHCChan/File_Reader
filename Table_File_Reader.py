@@ -19,7 +19,12 @@ LIST__csv = ["CSV", "Csv", "csv"]
 LIST__tsv = ["TSV", "Tsv", "tsv", "TAB", "Tab", "tab"]
 LIST__ssv = ["SSV", "Ssv", "ssv"]
 
-LIST__newline = ["\n", "\r", "\n\r", "\r\n"]
+# LIST__newline
+try:
+    test = LIST__newline
+except:
+    LIST__newline = ["\n", "\r", "\n\r", "\r\n"]
+    # Should already exist in imported modules
 
 
 
