@@ -121,6 +121,10 @@ class GTF_Reader(Table_Reader):
     
     _MSG__abnormal = "Abnormal data detected:\n\t{s}"
     
+    _MSG__unknown_ID_type = "SOFTWARE IMPLEMENTATION ERROR:\n\t"\
+            "Attempted to use unknown ID type.\n\t"\
+            "Please contact the developer."
+    
     
     
     # Constructor & Destructor #################################################
@@ -135,6 +139,8 @@ class GTF_Reader(Table_Reader):
                 header_params, True)
         self.grouping = METHOD.NONE
         self.tag = tag
+        self.Set_Current_ID(None)
+        self.Set_Next_ID(None)
         if grouping_method:
             self.Set_Grouping_Method(grouping_method)
     
@@ -164,12 +170,83 @@ class GTF_Reader(Table_Reader):
         Set the tag to use for grouping.
         """
         self.tag = tag_str
-
+    
     def Get_Tag(self):
         """
         Return the tag to use for grouping.
         """
         return self.tag
+    
+    def Set_Current_ID(self, ID):
+        """
+        Set the current group ID.
+        """
+        type_ = type(ID)
+        if ID == None:
+            self.current_ID = None
+        elif type_ == str:
+            self.current_ID = ID
+        elif type_ == tuple:
+            self.current_ID = tuple(ID)
+        elif type_ == list:
+            self.current_ID = list(ID)
+        else:
+            # This should never trigger unless a future developer messes up.
+            print "s"
+            raise Exception(self._MSG__unknown_ID_type)
+    
+    def Get_Current_ID(self):
+        """
+        Get a copy of the current group ID.
+        """
+        type_ = type(self.current_ID)        
+        if self.current_ID == None:
+            return None
+        elif type_ == str:
+            return self.current_ID
+        elif type_ == tuple:
+            return tuple(self.current_ID)
+        elif type_ == list:
+            return list(self.current_ID)
+    
+    def Set_Next_ID(self, ID):
+        """
+        Set the next group ID.
+        """
+        type_ = type(ID)
+        if ID == None:
+            self.next_ID = None
+        elif type_ == str:
+            self.next_ID = ID
+        elif type_ == tuple:
+            self.next_ID = tuple(ID)
+        elif type_ == list:
+            self.next_ID = list(ID)
+        else:
+            # This should never trigger unless a future developer messes up.
+            raise Exception(self._MSG__unknown_ID_type)
+    
+    def Get_Next_ID(self):
+        """
+        Get a copy of the next group ID.
+        """
+        type_ = type(self.next_ID)
+        if self.next_ID == None:
+            return None
+        elif type_ == str:
+            return self.next_ID
+        elif type_ == tuple:
+            return tuple(self.next_ID)
+        elif type_ == list:
+            return list(self.next_ID)
+    
+    def Push_Next_ID(self, ID):
+        """
+        Slide the "next" ID to become the current ID, and set a new "next" ID.
+        """
+        next_ID = self.Get_Next_ID()
+        self.Set_Current_ID(next_ID)
+        self.Set_Next_ID(ID)
     
     
     
@@ -230,8 +307,17 @@ class GTF_Reader(Table_Reader):
             f.close()
             return count
         return -1
-        
-        
+    
+    def __new(self):
+        """
+        Reset the state indicators when a new file is opened.
+        """
+        File_Reader.__new()
+        self.Set_Current_ID(None)
+        self.Set_Next_ID(None)
+    
+    
+    
     # File Reading Methods #####################################################
 
     def Read_Header(self):
@@ -272,7 +358,7 @@ class GTF_Reader(Table_Reader):
         # Next subgroup
         row = self.next_row
         if row == [""]: return self.empty_element
-        group_ID = self._get_group_ID(row)
+        group_ID = self.Get_Next_ID()
         result = [list(row)]
         # Read on, loop
         flag = True
@@ -291,6 +377,7 @@ class GTF_Reader(Table_Reader):
             else:
                 result.append(values)
             # Next
+            self.Push_Next_ID(ID)
             self.current_raw = self.file.readline()
         # Return
         return result
