@@ -1,30 +1,18 @@
 """
-SUBGROUPED TABLE FILE READER
+GTF FILE READER
 (version 1.0)
 by Angelo Chan
 
-This module contains a Class capable of reading and a data table file whose
-contents are sorted by subgroup, and returns the subgroups as a list of list of
-values, rather than returning individual lines.
-
-Example file contents:
-
-    ID  GROUP_ID    SUBGROUP_ID    VALUE
-    1   Tree        Oak
-    2   Tree        Willow
-    3   Tree        Maple
-    4   Ore         Copper
-    5   Ore         Tin
-    6   Ore         Iron
-
-Example yields:
-
-    What the reader returns after the first read:
-        [["1", "Tree", "Oak"], ["2", "Tree", "Willow"], ["3", "Tree", "Maple"]]
-
-    What the reader returns after the second read:
-        [["4", "Ore", "Copper"], ["5", "Ore", "Tin"], ["6", "Ore", "Iron"]] 
+This module contains a Class capable of reading and a GTF file and grouping the
+rows by some sort of criteria, such as by gene_ID.
 """
+
+# Configurations ###############################################################
+
+STR__start_codon = "start_codon"
+STR__stop_codon = "stop_codon"
+
+
 
 # Imported Modules #############################################################
 
@@ -38,7 +26,7 @@ class METHOD:
     NONE=0
     TAG=1
 
-
+"start_codon"
 
 # Lists ########################################################################
 
@@ -319,7 +307,7 @@ class GTF_Reader(Table_Reader):
     
     
     # File Reading Methods #####################################################
-
+    
     def Read_Header(self):
         """
         Read in the header rows of the file and store them separately according
@@ -453,5 +441,47 @@ class GTF_Reader(Table_Reader):
             dict_[key] = value
             values.append(dict_)
         return values
+    
+    def Get_Coords(self):
+        """
+        Return the chromosome, start, end, strand/directionality, and size of
+        the current gene.
+        
+        Return an empty list if there is not start and stop codon.
+        """
+        # Setup
+        flag_start = False
+        flag_stop = False
+        lowest_start = 999999999999
+        highest_start = -1
+        lowest_end = 999999999999
+        highest_end = -1
+        # Iterate
+        for values in self.current_element:
+            chr_ = values[0]
+            c1 = int(values[3])
+            c2 = int(values[4])
+            if values[2] == STR__start_codon:
+                flag_start = True
+                if c1 < lowest_start: lowest_start = c1
+                if c2 > highest_start: highest_start = c2
+            else: # values[2] == "stop_codon"
+                flag_stop = True
+                if c1 < lowest_end: lowest_end = c1
+                if c2 > highest_end: highest_end = c2
+        # Non-coding
+        if (not flag_start) or (not flag_stop): return []
+        # Resolve
+        if lowest_start > lowest_end:
+            strand = "-"
+            lowest = lowest_end
+            highest = highest_start
+        else:
+            strand = "+"
+            lowest = lowest_start
+            highest = highest_end
+        length = highest - lowest
+        # Return
+        return [chr_, lowest, highest, strand, length]
 
 
