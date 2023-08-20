@@ -28,7 +28,7 @@ Example yields:
 
 # Imported Modules #############################################################
 
-from Table_File_Reader import *
+from Table_File_Reader import * # Requires version 1.1 or later
 
 
 

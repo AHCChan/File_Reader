@@ -1,6 +1,6 @@
 """
 FILE READER
-(version 1.0)
+(version 1.1)
 by Angelo Chan
 
 This module contains a Class designed to be the base class on which
