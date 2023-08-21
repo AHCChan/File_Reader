@@ -88,7 +88,7 @@ class GTF_Reader(Table_Reader):
     
     # Minor Configurations #####################################################
     
-    empty_element = [[]]
+    empty_element = []
     
     # Minor Configurations #####################################################
     
@@ -247,6 +247,7 @@ class GTF_Reader(Table_Reader):
         
         Requires at least one delimiter to be set.
         """
+        self.__new()
         if self.grouping == METHOD.NONE:
             self.printE(self._MSG__invalid_group_type)
             return
@@ -300,7 +301,6 @@ class GTF_Reader(Table_Reader):
         """
         Reset the state indicators when a new file is opened.
         """
-        File_Reader.__new()
         self.Set_Current_ID(None)
         self.Set_Next_ID(None)
     
@@ -345,8 +345,10 @@ class GTF_Reader(Table_Reader):
         """
         # Next subgroup
         row = self.next_row
-        if row == [""]: return self.empty_element
-        group_ID = self.Get_Next_ID()
+        if row == [""]:
+            self.Push_Next_ID(None)
+            return self.empty_element
+        group_ID = self._get_group_ID(row)
         result = [list(row)]
         # Read on, loop
         flag = True
@@ -362,10 +364,10 @@ class GTF_Reader(Table_Reader):
             # Check for new section
             if ID != group_ID:
                 flag = False
+                self.Push_Next_ID(group_ID)
             else:
                 result.append(values)
             # Next
-            self.Push_Next_ID(ID)
             self.current_raw = self.file.readline()
         # Return
         return result
