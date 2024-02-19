@@ -43,12 +43,12 @@ class Table_Reader(File_Reader):
     """
     The Table Reader is a file reader designed specifically to work with CSV,
     TSV, or SSV files.
-
+    
     The Table Reader acts as a two-phase buffer to store both the "current"
     row and the "next" row, not every row in the file.
-
+    
     The Table Reader defaults to Tab Separated Format behaviour.
-
+    
     Designed for the following use:
     
     f = Table_Reader()
