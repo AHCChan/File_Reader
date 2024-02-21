@@ -124,7 +124,7 @@ class Table_Reader(File_Reader):
                 raise TypeError("list indices must be integers, not str")
             if arg > len(self.current_element):
                 raise IndexError("list index out of range")
-            raise Exception("Unknown error in Table_File_Reader.__getitem__")          
+            raise Exception("Unknown error in Table_File_Reader.__getitem__")
     
     def Autodetect_Delimiter(self):
         """
@@ -136,7 +136,7 @@ class Table_Reader(File_Reader):
             return
         delim = self.Detect_Delimiter()
         self.Set_Delimiter(delim)
-        
+    
     def Detect_Delimiter(self, file_path=""):
         """
         Return a delimiter based on the file name. Use the stored file name if
@@ -154,13 +154,13 @@ class Table_Reader(File_Reader):
             return
         delim = DICT__delimiters.get(extension)
         return delim
-        
+    
     def Set_Delimiter(self, delimiter):
         """
         Set the delimiter to the input.
         """
         self.delimiter = delimiter
-
+    
     def Set_Enclosers(self, enclosers):
         """
         Set the escape character set to the input.
@@ -239,11 +239,11 @@ class Table_Reader(File_Reader):
         else:
             self.printE(self._MSG__no_delimiter)
             return
-        
-        
-        
+    
+    
+    
     # File Reading Methods #####################################################
-
+    
     def Read_Header(self):
         """
         Read in the header rows of the file and store them separately according
@@ -343,7 +343,7 @@ class Table_Reader(File_Reader):
         if element == self.empty_element:
             return True
         return False
-        
+
 
 
 # Functions ####################################################################
