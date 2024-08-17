@@ -1,6 +1,6 @@
 """
 TABLE FILE READER
-(version 1.0)
+(version 1.1)
 by Angelo Chan
 
 This module contains a Class capable of reading and interpretting files which
@@ -105,7 +105,7 @@ class Table_Reader(File_Reader):
         self.Set_Enclosers(enclosers)
         self.Set_Keep_Enclosers(keep_enclosers)
         self.Set_Header_Params(header_params)
-        self.current_raw = self.next_raw = ""
+        self.prev_raw = self.current_raw = self.next_raw = ""
         self.header_text = ""
     
     
@@ -223,6 +223,12 @@ class Table_Reader(File_Reader):
             return count
         return -1
     
+    def Get_Raw(self):
+        """
+        Return the raw text of the current line.
+        """
+        return self.prev_raw        
+    
     
     
     # File I/O Methods #########################################################
@@ -276,6 +282,7 @@ class Table_Reader(File_Reader):
         
         Return an empty string if the end of the file has been reached.
         """
+        self.prev_raw = self.current_raw
         self.current_raw = self.next_raw
         self.next_raw = self.file.readline()
         if self.enclosers:
