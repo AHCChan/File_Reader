@@ -1,6 +1,6 @@
 """
 FILE READER
-(version 1.1)
+(version 1.2)
 by Angelo Chan
 
 This module contains a Class designed to be the base class on which
@@ -82,6 +82,7 @@ class File_Reader:
     
     _MSG__method_not_implemented = "WARNING: A critical method has not been "\
             "implemented."
+    _MSG__method_should_not_call = "WARNING: This method should not be called."
     
     # Constructor & Destructor #################################################
     
@@ -128,8 +129,8 @@ class File_Reader:
                 ["CLOSED", "OPENED"][self.file_opened] + "\n\t")
         if self.file_path: sb += "PATH:\t\"{P}\"".format(P = self.file_path)
         else: sb += "(No File Path specified.)"
-        sb += "\n\tSIZE:\t{S} {E}".format(S = self.Get_Size(),
-                E = self._MSG__units_of_measure)
+        sb += "\n\tSIZE:\t{S} {U}".format(S = self.Get_Size(),
+                U = self._MSG__units_of_measure)
         return sb
      
     def Get_Size(self):
