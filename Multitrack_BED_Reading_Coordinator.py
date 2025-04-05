@@ -24,7 +24,14 @@ Requires:
     1+ Data Files (BED file)
         Contains the data of interest.
 
-At each "Read()" command, the reader will
+At each "Read()" command, the reader will read in the next locus in the loci
+file and then, for each data file, read until they are past that locus, with all
+data stored in a buffer.
+
+Depending on the settings, data entries from before the locus might be stored in
+a buffer, data entries from the previous chromosomes might be stored in a buffer
+and data entries which partially but not fully overlap with the locus might be
+stored in a buffer.
 
 
 
@@ -100,6 +107,8 @@ class Multitrack_BED_Coordinator(File_Reader):
     empty_element = []
     placeholder_coords = ["", -1, -1]
     
+    
+       
     # Minor Configurations #####################################################
     
     _CONFIG__print_errors = True
