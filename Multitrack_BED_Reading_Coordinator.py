@@ -707,6 +707,7 @@ class Multitrack_BED_Coordinator(File_Reader):
                 f.Read()
             self.current_after[i] = (temp)
         self.count_loci += 1
+        return 0
     
     def Read_Final(self):
         """
