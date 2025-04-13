@@ -62,7 +62,7 @@ class Table_Reader(File_Reader):
     #                                   1 row
     f.Open()
     
-    # f.Read() # Optional for headers
+    # f.Read_Header() # Optional for headers
     
     while not f.EOF:
         f.Read()
