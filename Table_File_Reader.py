@@ -1,6 +1,6 @@
 """
 TABLE FILE READER
-(version 1.1)
+(version 1.1.1)
 by Angelo Chan
 
 This module contains a Class capable of reading and interpretting files which
@@ -60,9 +60,7 @@ class Table_Reader(File_Reader):
     #                               Skip:
     #                                   all rows starting with "#", THEN
     #                                   1 row
-    f.Open()
-    
-    # f.Read_Header() # Optional for headers
+    f.Open() # Read_Header() is automatically called during Open()
     
     while not f.EOF:
         f.Read()
