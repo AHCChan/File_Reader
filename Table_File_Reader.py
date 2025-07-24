@@ -1,6 +1,6 @@
 """
 TABLE FILE READER
-(version 1.1.1)
+(version 1.2)
 by Angelo Chan
 
 This module contains a Class capable of reading and interpretting files which
@@ -87,6 +87,8 @@ class Table_Reader(File_Reader):
     
     _MSG__no_delimiter = "No delimiter specified."
     _MSG__no_extension = "No file extension detected."
+    
+    _MSG__header_oob = "Header parameter out-of-bounds error."
     
     
 
@@ -184,10 +186,49 @@ class Table_Reader(File_Reader):
 
     def Get_Header_Text(self):
         """
-        Return the Header text which does not constitute a main part of the data
+        Return the header text which does not constitute a main part of the data
         file.
         """
         return self.header_text
+
+    def Get_Processed_Header_Text(self, params):
+        """
+        Return part of the header text as a list of lines.
+        Return None if [params] go out-of-bounds.
+        
+        [params] is to be a list of pairs. Each pair consists of a boolean and
+        either an integer or a string. The boolean specifies whether to return
+        the section being specified or not (True = keep), while the integers
+        and/or strings specify a section of the header text.
+        """
+        lines = self.header_text.split("\n")
+        if lines[-1] == "": lines = lines[:-1]
+        results = []
+        for section in params:
+            keep, specifier = section
+            if type(specifier) == int:
+                while specifier > 0:
+                    if not lines:
+                        self.printE(self._MSG__header_oob)
+                        return None
+                    else:
+                        line = lines.pop(0)
+                        if keep:
+                            results.append(line)
+                    specifier = specifier - 1
+            else: # char
+                read_flag = True
+                while read_flag:
+                    if lines:
+                        if lines[0].startswith(specifier):
+                            line = lines.pop(0)
+                            if keep:
+                                results.append(line)
+                        else:
+                            read_flag = False
+                    else:
+                        read_flag = False
+        return results
     
     def Copy_Element(self, element):
         """
