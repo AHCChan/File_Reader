@@ -1,6 +1,6 @@
 """
 TABLE FILE READER
-(version 1.2)
+(version 2.0)
 by Angelo Chan
 
 This module contains a Class capable of reading and interpretting files which
@@ -10,6 +10,14 @@ contain data tables and returning the values of each row, line by line.
 # Imported Modules #############################################################
 
 from File_Reader import *
+
+
+# Enums ########################################################################
+
+class KSR:
+    KEEP=1
+    SKIP=2
+    REAR=3
 
 
 
@@ -60,6 +68,11 @@ class Table_Reader(File_Reader):
     #                               Skip:
     #                                   all rows starting with "#", THEN
     #                                   1 row
+    f.Set_Adv_Header_Params([[KSR.KEEP, 1], [KSR.SKIP, "#"], [KSR.REAR, 1]])
+    #                                   # Optional
+    #                                   # Keep the first row
+    #                                   # Skip all rows starting with "#"
+    #                                   # Rearrange the contents of the next row
     f.Open() # Read_Header() is automatically called during Open()
     
     while not f.EOF:
@@ -89,6 +102,8 @@ class Table_Reader(File_Reader):
     _MSG__no_extension = "No file extension detected."
     
     _MSG__header_oob = "Header parameter out-of-bounds error."
+    _MSG__header_adv_unkn = "Advanced header parsing, "\
+            "unknown section type error."
     
     
 
@@ -175,14 +190,41 @@ class Table_Reader(File_Reader):
 
     def Set_Header_Params(self, params):
         """
-        Set the header parmas of the file.
+        Set the header params of the file.
         
         [params] is expected to be a list of integers and/or strings. For
         integers, that many rows will be added directly to the "header_text"
-        varaible. For strings, rows will be added directly to the "header_text"
+        variable. For strings, rows will be added directly to the "header_text"
         variable as long as those rows begin with the string specified.
         """
         self.header_params = params
+
+    def Set_Adv_Header_Params(self, adv_params):
+        """
+        Set the advanced header params of the file. These control what is
+        outputted by Get_Adv_Processed_Header_Text.
+        
+        Overrides the settings created by Set_Header_Params.
+        
+        [params] is a series of pairs. The first variable in the pair is an
+        integer denoting the action to be taken:
+            1:  Keep the lines being specified
+            2:  Skip the lines being specified
+            3:  Treat the contents of the next line as column headers
+        The second variable specifies the line(s) to which the action is to be
+        applied:
+            (int)   A set number of lines.
+            (str)   An unknown number of lines which begin with said string
+        """
+        self.adv_header_params = adv_params
+        basic_params = []
+        for pair in adv_params:
+            action, specifier = pair
+            if action == KSR.REAR:
+                basic_params.append(1)
+            else:
+                basic_params.append(specifier)
+        self.header_params = basic_params
 
     def Get_Header_Text(self):
         """
@@ -196,10 +238,10 @@ class Table_Reader(File_Reader):
         Return part of the header text as a list of lines.
         Return None if [params] go out-of-bounds.
         
-        [params] is to be a list of pairs. Each pair consists of a boolean and
-        either an integer or a string. The boolean specifies whether to return
-        the section being specified or not (True = keep), while the integers
-        and/or strings specify a section of the header text.
+        [adv_params] is to be a list of pairs. Each pair consists of a boolean
+        and either an integer or a string. The boolean specifies whether to
+        return the section being specified or not (True = keep), while the
+        integers and/or strings specify a section of the header text.
         """
         lines = self.header_text.split("\n")
         if lines[-1] == "": lines = lines[:-1]
@@ -229,6 +271,51 @@ class Table_Reader(File_Reader):
                     else:
                         read_flag = False
         return results
+
+    def Adv_Process_Header_Text(self, adv_params=None):
+        """
+        Advanced method for processing header text.
+        Return the text that is to be written directly into output file, and the
+        column headers if column headers were specified (using KSR.REAR).
+        If column headers were not specified, return an empty list.
+        
+        [adv_params] is to be a list of pairs. Each pair consists of a boolean
+        and either an integer or a string. The boolean specifies whether to
+        return the section being specified or not (True = keep), while the
+        integers and/or strings specify a section of the header text.
+        """
+        # Advanced params
+        if not adv_params: adv_params = self.adv_header_params
+        # Setup
+        sb = ""
+        headers = []
+        # Initial split
+        lines = self.header_text.split("\n")
+        if lines[-1] == "": lines = lines[:-1]
+        # Loop
+        for section in header_specs:
+            ksr, specifier = section
+            if ksr == KSR.REAR:
+                if lines:
+                    headers = lines[0].split(self.delimiter)
+                    lines.pop(0)
+            else:
+                if type(specifier) == int:
+                    while lines and specifier > 0:
+                        line = lines.pop(0)
+                        if ksr == KSR.KEEP:
+                            sb += line + "\n"
+                        specifier = specifier - 1
+                elif type(specifier) == str:
+                    while lines and lines[0].startswith(specifier):
+                        line = lines.pop(0)
+                        if ksr == KSR.KEEP:
+                            sb += line + "\n"
+                else:
+                    self.printE(self._MSG__header_adv_unkn)
+        # Finish and return
+        f.close()
+        return [sb, headers]
     
     def Copy_Element(self, element):
         """
