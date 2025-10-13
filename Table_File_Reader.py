@@ -1,6 +1,6 @@
 """
 TABLE FILE READER
-(version 2.0)
+(version 2.1)
 by Angelo Chan
 
 This module contains a Class capable of reading and interpretting files which
@@ -293,7 +293,7 @@ class Table_Reader(File_Reader):
         lines = self.header_text.split("\n")
         if lines[-1] == "": lines = lines[:-1]
         # Loop
-        for section in header_specs:
+        for section in adv_params:
             ksr, specifier = section
             if ksr == KSR.REAR:
                 if lines:
@@ -314,7 +314,6 @@ class Table_Reader(File_Reader):
                 else:
                     self.printE(self._MSG__header_adv_unkn)
         # Finish and return
-        f.close()
         return [sb, headers]
     
     def Copy_Element(self, element):
